@@ -8,6 +8,6 @@ function handler(_, res) {
 }
 
 createServer(handler).listen(3940, () => {
-  // eslint-disable-next-line security-node/detect-crlf
+  // eslint-disable-next-line security-node/detect-crlf, no-console
   console.log(`Server running at http://localhost/${PORT}`);
 });
