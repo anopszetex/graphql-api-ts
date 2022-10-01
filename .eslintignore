@@ -1,0 +1,8 @@
+index.html
+.vscode/
+.yarn/
+dist/
+coverage/
+node_modules/
+bench/README.md
+README.md
