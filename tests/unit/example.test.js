@@ -1,3 +1,4 @@
+// eslint-disable-next-line node/no-missing-import, import/no-unresolved
 import { sum } from '@/sum';
 
 describe('Make a test to sum 2 numbers', () => {
