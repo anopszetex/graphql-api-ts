@@ -15,5 +15,6 @@
     "forceConsistentCasingInFileNames": true,
     "rootDir": "src",
     "outDir": "dist"
-  }
+  },
+  "exclude": ["node_modules/**/*", "src/handlers/**/*", ".vscode/**/*", "dist"]
 }
