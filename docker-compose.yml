@@ -3,10 +3,40 @@ version: '3.1'
 services:
   postgres:
     image: postgres:14.2-alpine
+    restart: always
     environment:
-      POSTGRES_DB: dev
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DATABASES: dev
+      POSTGRES_DB: ${DB_NAME_POSTGRES:-dev}
+      POSTGRES_USER: ${DB_USER_POSTGRES:-root}
+      POSTGRES_PASSWORD: ${DB_PASS_POSTGRES:-root}
+      POSTGRES_DATABASES: ${DB_NAME_POSTGRES:-dev}
     ports:
-      - '5432:5432'
+      - '${DB_PORT_POSTGRES:-5432}:5432'
+  db:
+    image: mongo:4.2
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: ${DB_NAME_MONGO:-dev}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER_MONGO:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS_MONGO:-root}
+    ports:
+      - '${DB_PORT_MONGO:-27017}:27017'
+  api:
+    image: node:latest
+    container_name: graphql-api-ts
+    restart: always
+    env_file:
+     - .env
+    depends_on:
+      - db
+      - postgres
+    ports:
+      - '${SERVER_PORT:-3940}:${SERVER_PORT:-3940}'
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    command: yarn start
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"

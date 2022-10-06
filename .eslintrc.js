@@ -46,5 +46,8 @@ module.exports = {
       'error',
       { ignores: ['modules'] },
     ],
+    'import/extensions': 'off',
+    'import/no-unresolved': 'off',
+    'node/no-missing-import': 'off',
   },
 };
