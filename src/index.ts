@@ -1,7 +1,7 @@
 import './env';
 
 import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { PostgreStrategy } from './strategies/postgreStrategy';
+import { postgreStrategy } from './strategies/postgreStrategy';
 import { createContainer } from './infra/connect';
 import logger from './infra/logger';
 
@@ -14,7 +14,7 @@ conn.get('dev');
 conn.get('dev');
 conn.get('dev');
 
-const knex = PostgreStrategy(conn.get('dev'));
+const knex = postgreStrategy(conn.get('dev'));
 
 const PORT = process.env.SERVER_PORT ?? 3940;
 function handler(request: IncomingMessage, response: ServerResponse): void {

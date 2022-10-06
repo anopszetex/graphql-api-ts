@@ -25,7 +25,7 @@ export interface IPostgreStrategy {
   getUserList: (args: UserContext) => Promise<User[]>;
 }
 
-export function PostgreStrategy(conn: Knex): IPostgreStrategy {
+export function postgreStrategy(conn: Knex): IPostgreStrategy {
   return {
     async getUser(args: UserContext): Promise<User> {
       const { table, input, columns = '*' } = args;
