@@ -1,28 +1,27 @@
+import dotenv from 'dotenv';
+
 import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { createContainer } from './infra/connect';
-// import { Knex } from 'knex';
+import { PostgreStrategy } from './strategies/postgreStrategy';
 
-// eslint-disable-next-line promise/catch-or-return, promise/always-return
+dotenv.config();
 
-const PORT = 3940;
+const PORT = process.env.SERVER_PORT ?? 3940;
 
-const knex = createContainer().get('dev');
 function handler(request: IncomingMessage, response: ServerResponse): void {
-  knex('users')
-    .first()
-    .then(user => {
-      // response.end(JSON.stringify(user));
-
-      console.log({ user });
+  PostgreStrategy('dev')
+    .findOne('users', {})
+    .then(result => {
+      console.log('result', result);
+    })
+    .catch(error => {
+      console.log('error', error);
     });
 
-  // console.log({ knex });
-  // knex.s;
   response.writeHead(200, { 'Content-Type': 'text/plain' });
   response.end('Hello World');
 }
 
-createServer(handler).listen(3940, () => {
+createServer(handler).listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server running at http://localhost/${PORT}`);
 });
