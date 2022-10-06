@@ -1,21 +1,18 @@
-import { createContainer } from './../infra/connect';
+import { Knex } from 'knex';
 
 export interface User {
   id: number;
-  email?: string;
-  username?: string;
-  isActive?: boolean;
-  firstName?: string;
-  lastName?: string;
-  password?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  email: string;
+  username: string;
+  isActive: boolean;
+  firstName: string;
+  lastName: string;
+  password: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface GetInput {
-  id?: number;
-  email?: string;
-}
+type GetInput = Partial<Omit<User, 'password'>>;
 
 export interface UserContext {
   table: string;
@@ -28,9 +25,7 @@ export interface IPostgreStrategy {
   getUserList: (args: UserContext) => Promise<User[]>;
 }
 
-export function PostgreStrategy(datasource: string): IPostgreStrategy {
-  const conn = createContainer().get(datasource);
-
+export function PostgreStrategy(conn: Knex): IPostgreStrategy {
   return {
     async getUser(args: UserContext): Promise<User> {
       const { table, input, columns = '*' } = args;
