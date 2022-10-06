@@ -1,20 +1,24 @@
-import dotenv from 'dotenv';
+// import './env';
 
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { PostgreStrategy } from './strategies/postgreStrategy';
-
-dotenv.config();
+import logger from './infra/logger';
 
 const PORT = process.env.SERVER_PORT ?? 3940;
 
 function handler(request: IncomingMessage, response: ServerResponse): void {
-  PostgreStrategy('dev')
+  const database = PostgreStrategy('dev');
+
+  logger.info('request received');
+
+  database
     .findOne('users', {})
     .then(result => {
-      console.log('result', result);
+      logger.info({ result }, 'users');
+      return null;
     })
-    .catch(error => {
-      console.log('error', error);
+    .catch((error: Error) => {
+      logger.error({ error }, 'error');
     });
 
   response.writeHead(200, { 'Content-Type': 'text/plain' });
