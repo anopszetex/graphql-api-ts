@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import pinoLogger from 'pino';
 import { isDevelopment } from './../support';
 
@@ -12,11 +13,10 @@ const logger = pinoLogger({
     },
   },
   base: {
-    appVersion:
-      process.env.APP_VERSION === undefined
-        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
-          (require('../../package.json').version as string)
-        : process.env.APP_VERSION,
+    appVersion: isEmpty(process.env.APP_VERSION)
+      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
+        (require('../../package.json').version as string)
+      : process.env.APP_VERSION,
   },
 });
 
