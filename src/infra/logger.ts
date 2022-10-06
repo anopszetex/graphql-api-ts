@@ -12,11 +12,10 @@ const logger = pinoLogger({
     },
   },
   base: {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     appVersion:
       process.env.APP_VERSION === undefined
         ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
-          require('../../package.json').version
+          (require('../../package.json').version as string)
         : process.env.APP_VERSION,
   },
 });
