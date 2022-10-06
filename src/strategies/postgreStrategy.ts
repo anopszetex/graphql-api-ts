@@ -1,13 +1,46 @@
 import { createContainer } from './../infra/connect';
 
-import { IPostgreStrategy, User, GetInput } from './../domains/utils';
+export interface User {
+  id: number;
+  email?: string;
+  username?: string;
+  isActive?: boolean;
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface GetInput {
+  id?: number;
+  email?: string;
+}
+
+export interface UserContext {
+  table: string;
+  input: GetInput;
+  columns?: string | string[];
+}
+
+export interface IPostgreStrategy {
+  getUser: (args: UserContext) => Promise<User>;
+  getUserList: (args: UserContext) => Promise<User[]>;
+}
 
 export function PostgreStrategy(datasource: string): IPostgreStrategy {
   const conn = createContainer().get(datasource);
 
   return {
-    async findOne(table: string, options: GetInput): Promise<User[]> {
-      return (await conn(table).where(options).first()) as User[];
+    async getUser(args: UserContext): Promise<User> {
+      const { table, input, columns = '*' } = args;
+
+      return (await conn(table).where(input).select(columns).first()) as User;
+    },
+    async getUserList(args: UserContext): Promise<User[]> {
+      const { table, input, columns = '*' } = args;
+
+      return (await conn(table).select(columns).where(input)) as User[];
     },
   };
 }
