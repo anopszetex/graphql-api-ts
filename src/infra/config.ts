@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { defaultsDeep } from 'lodash';
 
 const config = Object.freeze({
   client: 'pg',
@@ -13,16 +14,9 @@ const config = Object.freeze({
 });
 
 export function getConfig(database: string, extra = {}): Knex.Config {
-  const mergeConfig = {
-    ...config,
-    pool: { ...config.pool, ...extra },
-  };
-
-  if (database === config.connection.database) {
-    return mergeConfig;
-  }
-
-  config.connection.database = database;
-
-  return mergeConfig;
+  return defaultsDeep(
+    { connection: { database } },
+    extra,
+    config
+  ) as Knex.Config;
 }

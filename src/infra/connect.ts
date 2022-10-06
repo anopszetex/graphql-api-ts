@@ -3,9 +3,11 @@ import { getConfig } from './config';
 
 const connect = (database: string): Knex => {
   const extra = {
-    afterCreate: (_: Knex, done: () => void) => {
-      console.log('afterCreate');
-      done();
+    pool: {
+      afterCreate: (_: Knex, done: () => void) => {
+        console.log('afterCreate');
+        done();
+      },
     },
   };
 
