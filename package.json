@@ -8,12 +8,16 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "tsnd --respawn -- src/index.ts",
+    "clean:build": "rm -rf dist/",
+    "start": "node dist/index.js",
+    "dev": "tsnd --respawn -- src/index.ts",
     "lint": "eslint src/ --ext .ts",
     "lint:ci": "eslint -f json -o coverage/eslint.json src/ --ext .ts",
     "format": "prettier src/ -w -u",
     "format:check": "prettier src/ -c -u",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",
