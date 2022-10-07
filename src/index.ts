@@ -5,20 +5,17 @@ import { postgreStrategy } from './strategies/postgreStrategy';
 import { createContainer } from './infra/connect';
 import logger from './infra/logger';
 
+// import {createContainer} from './infra/connect'
 const conn = createContainer(logger);
-
-conn.get('dev');
-conn.get('dev');
-conn.get('dev');
-conn.get('dev');
-conn.get('dev');
-conn.get('dev');
-
-const knex = postgreStrategy(conn.get('dev'));
+const datasource = 'dev';
+const knex = postgreStrategy(conn.getKnex(datasource));
 
 const PORT = process.env.SERVER_PORT ?? 3940;
+
 function handler(request: IncomingMessage, response: ServerResponse): void {
   logger.info('request received');
+
+  conn.getMongo(datasource);
 
   knex
     .getUser({ table: 'users', input: { id: 1 }, columns: ['id'] })
