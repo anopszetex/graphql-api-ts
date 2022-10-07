@@ -16,35 +16,50 @@ function connectKnex(database: string, logger: Logger): Knex {
   return knex(getKnexConfig(database, extra));
 }
 
+async function connectMongo(
+  datasource: string,
+  logger: Logger
+): Promise<Mongoose> {
+  const { uri, connectionOptions } = getMongooseConfig(datasource);
+
+  const conn = await mongoose.connect(uri, connectionOptions);
+
+  logger.info(`Connected to ${datasource} database with mongoose`);
+
+  return conn;
+}
+
 interface DataBaseContainer {
   getKnex: (datasource: string) => Knex;
   getMongo: (datasource: string) => Promise<Mongoose>;
 }
 
 export function createContainer(logger: Logger): DataBaseContainer {
-  const cache = new Map<string, Knex>();
+  const cacheKnex = new Map<string, Knex>();
+  const cacheMongo = new Map<string, Mongoose>();
 
   return {
     getKnex(datasource): Knex {
-      if (!cache.has(datasource)) {
-        cache.set(datasource, connectKnex(datasource, logger));
+      if (!cacheKnex.has(datasource)) {
+        cacheKnex.set(datasource, connectKnex(datasource, logger));
       }
 
       logger.debug(`Connection ${datasource} retrieved from cache`);
 
-      return cache.get(datasource) as Knex;
+      return cacheKnex.get(datasource) as Knex;
     },
     async getMongo(datasource): Promise<Mongoose> {
-      const conn = await mongoose.connect(getMongooseConfig(), {
-        dbName: 'sdadsadsasad',
-        minPoolSize: 0,
-        maxPoolSize: 5,
-        maxIdleTimeMS: 60000,
-      });
+      if (!cacheMongo.has(datasource)) {
+        const conn = await connectMongo(datasource, logger);
 
-      logger.info(`Connected to ${datasource} database with mongoose`);
+        cacheMongo.set(datasource, conn);
+      }
 
-      return conn;
+      logger.debug(
+        `Connection ${datasource} retrieved from cache with mongoose`
+      );
+
+      return cacheMongo.get(datasource) as Mongoose;
     },
   };
 }

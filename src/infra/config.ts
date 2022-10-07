@@ -1,5 +1,6 @@
 import { Knex } from 'knex';
-import { defaultsDeep, isEmpty } from 'lodash';
+import { defaultsDeep } from 'lodash';
+import { ConnectOptions } from 'mongoose';
 
 const config = Object.freeze({
   client: 'pg',
@@ -29,6 +30,19 @@ export function getKnexConfig(database: string, extra = {}): Knex.Config {
   ) as Knex.Config;
 }
 
-export function getMongooseConfig(): string {
-  return `mongodb://${options.user}:${options.password}@${options.host}:${options.port}`;
+interface MongoConfig {
+  uri: string;
+  connectionOptions: ConnectOptions;
+}
+
+export function getMongooseConfig(datasource: string): MongoConfig {
+  return {
+    uri: `mongodb://${options.user}:${options.password}@${options.host}:${options.port}`,
+    connectionOptions: {
+      dbName: datasource,
+      minPoolSize: 0,
+      maxPoolSize: 5,
+      maxIdleTimeMS: 60000,
+    },
+  };
 }
