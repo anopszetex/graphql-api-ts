@@ -1,18 +1,7 @@
 import { Knex } from 'knex';
+import { UserPostgre } from './types';
 
-export interface User {
-  id: number;
-  email: string;
-  username: string;
-  password: string;
-  last_name: string;
-  first_name: string;
-  is_active: boolean;
-  created_at: Date;
-  updated_at: Date;
-}
-
-type GetInput = Partial<Omit<User, 'password'>>;
+type GetInput = Partial<Omit<UserPostgre, 'password'>>;
 
 export interface UserContext {
   table: string;
@@ -21,23 +10,23 @@ export interface UserContext {
 }
 
 export interface IPostgreStrategy {
-  getUser: (args: UserContext) => Promise<User | undefined>;
-  getUserList: (args: UserContext) => Promise<User[]>;
+  getUser: (args: UserContext) => Promise<UserPostgre | undefined>;
+  getUserList: (args: UserContext) => Promise<UserPostgre[]>;
 }
 
 export function postgreStrategy(conn: Knex): IPostgreStrategy {
   return {
-    async getUser(args: UserContext): Promise<User | undefined> {
+    async getUser(args: UserContext): Promise<UserPostgre | undefined> {
       const { table, input, columns = '*' } = args;
 
       return (await conn(table).where(input).select(columns).first()) as
-        | User
+        | UserPostgre
         | undefined;
     },
-    async getUserList(args: UserContext): Promise<User[]> {
+    async getUserList(args: UserContext): Promise<UserPostgre[]> {
       const { table, input, columns = '*' } = args;
 
-      return (await conn(table).select(columns).where(input)) as User[];
+      return (await conn(table).select(columns).where(input)) as UserPostgre[];
     },
   };
 }
