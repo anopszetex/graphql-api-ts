@@ -1,13 +1,13 @@
 import { Knex, knex } from 'knex';
-import { getKnexConfig, getMongooseConfig } from './config';
 import { Logger } from 'pino';
 import mongoose, { Mongoose } from 'mongoose';
+import { getKnexConfig, getMongooseConfig } from './config';
 
 function connectKnex(database: string, logger: Logger): Knex {
   const extra: Partial<Knex.Config> = {
     pool: {
       afterCreate: (_: Knex, done: () => void) => {
-        logger.info(`Connected to ${database}`);
+        logger.info(`Connected to ${database} database with knex`);
         done();
       },
     },
@@ -17,14 +17,14 @@ function connectKnex(database: string, logger: Logger): Knex {
 }
 
 async function connectMongo(
-  datasource: string,
+  database: string,
   logger: Logger
 ): Promise<Mongoose> {
-  const { uri, connectionOptions } = getMongooseConfig(datasource);
+  const { uri, connectionOptions } = getMongooseConfig(database);
 
   const conn = await mongoose.connect(uri, connectionOptions);
 
-  logger.info(`Connected to ${datasource} database with mongoose`);
+  logger.info(`Connected to ${database} database with mongoose`);
 
   return conn;
 }
@@ -44,7 +44,7 @@ export function createContainer(logger: Logger): DataBaseContainer {
         cacheKnex.set(datasource, connectKnex(datasource, logger));
       }
 
-      logger.debug(`Connection ${datasource} retrieved from cache`);
+      logger.debug(`Connection ${datasource} retrieved from cache [knex]`);
 
       return cacheKnex.get(datasource) as Knex;
     },
@@ -55,9 +55,7 @@ export function createContainer(logger: Logger): DataBaseContainer {
         cacheMongo.set(datasource, conn);
       }
 
-      logger.debug(
-        `Connection ${datasource} retrieved from cache with mongoose`
-      );
+      logger.debug(`Connection ${datasource} retrieved from cache [mongoose]`);
 
       return cacheMongo.get(datasource) as Mongoose;
     },

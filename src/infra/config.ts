@@ -35,11 +35,11 @@ interface MongoConfig {
   connectionOptions: ConnectOptions;
 }
 
-export function getMongooseConfig(datasource: string): MongoConfig {
+export function getMongooseConfig(database: string): MongoConfig {
   return {
     uri: `mongodb://${options.user}:${options.password}@${options.host}:${options.port}`,
     connectionOptions: {
-      dbName: datasource,
+      dbName: database,
       minPoolSize: 0,
       maxPoolSize: 5,
       maxIdleTimeMS: 60000,
