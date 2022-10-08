@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "apollo-server": "^3.10.2",
+    "argon2": "^0.29.1",
     "dotenv": "^16.0.3",
     "graphql": "^16.6.0",
     "knex": "^2.3.0",
