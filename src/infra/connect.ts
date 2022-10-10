@@ -16,7 +16,7 @@ function connectKnex(database: string, logger: Logger): Knex {
   return knex(getKnexConfig(database, extra));
 }
 
-async function connectMongo(
+async function connectMongoose(
   database: string,
   logger: Logger
 ): Promise<Mongoose> {
@@ -31,7 +31,7 @@ async function connectMongo(
 
 interface DataBaseContainer {
   getKnex: (datasource: string) => Knex;
-  getMongo: (datasource: string) => Promise<Mongoose>;
+  getMongoose: (datasource: string) => Promise<Mongoose>;
 }
 
 export function createContainer(logger: Logger): DataBaseContainer {
@@ -48,9 +48,9 @@ export function createContainer(logger: Logger): DataBaseContainer {
 
       return cacheKnex.get(datasource) as Knex;
     },
-    async getMongo(datasource): Promise<Mongoose> {
+    async getMongoose(datasource): Promise<Mongoose> {
       if (!cacheMongo.has(datasource)) {
-        const conn = await connectMongo(datasource, logger);
+        const conn = await connectMongoose(datasource, logger);
 
         cacheMongo.set(datasource, conn);
       }
