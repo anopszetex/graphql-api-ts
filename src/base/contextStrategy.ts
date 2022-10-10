@@ -35,14 +35,14 @@ function createContextStrategy<T, U, V>(
 
 interface ILoadDb {
   knex: Knex;
-  mongo: Mongoose;
+  mongoose: Mongoose;
   queryBuilder: {
     postgre: IStrategy<PostgreArgs, UserPostgre | undefined, UserPostgre[]>;
     mongodb: IStrategy<MongoArgs, UserMongo | null, UserMongo[]>;
   };
 }
 
-export function loadDb(knex: Knex, mongo: Mongoose): ILoadDb {
+export function loadDb(knex: Knex, mongoose: Mongoose): ILoadDb {
   const postgre = createContextStrategy<
     PostgreArgs,
     UserPostgre | undefined,
@@ -55,5 +55,5 @@ export function loadDb(knex: Knex, mongo: Mongoose): ILoadDb {
     UserMongo[]
   >(mongoDBStrategy());
 
-  return { knex, mongo, queryBuilder: { postgre, mongodb } };
+  return { knex, mongoose, queryBuilder: { postgre, mongodb } };
 }
