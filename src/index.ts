@@ -1,33 +1,37 @@
 import './env';
 
-import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { postgreStrategy } from './strategies/postgreStrategy';
-import { createContainer } from './infra/connect';
 import logger from './infra/logger';
+import { createServer, IncomingMessage, ServerResponse } from 'http';
+import { createContainer } from './infra/connect';
 
-import { mongoDBStrategy } from './strategies/mongoDBStrategy';
+import { loadDb } from './base/contextStrategy';
 
-// import {createContainer} from './infra/connect'
-const conn = createContainer(logger);
-const datasource = 'dev';
-const knex = postgreStrategy(conn.getKnex(datasource));
+async function createContext(datasource: string): Promise<void> {
+  const database = createContainer(logger);
 
-const PORT = process.env.SERVER_PORT ?? 3940;
+  //* connect to postgre
+  const knex = database.getKnex(datasource);
 
-async function handler(
-  request: IncomingMessage,
-  response: ServerResponse
-): Promise<void> {
-  logger.info('request received');
+  //* connect to mongodb
+  const mongoose = await database.getMongoose(datasource);
 
-  await conn.getMongo(datasource);
-  await conn.getMongo(datasource);
-  await conn.getMongo(datasource);
-  await conn.getMongo(datasource).catch((error: Error) => {
-    logger.error({ error }, 'error');
-  });
+  const { queryBuilder } = loadDb(knex, mongoose);
 
-  mongoDBStrategy()
+  queryBuilder.postgre
+    .getUser({
+      table: 'users',
+      input: { id: 1 },
+      columns: ['id', 'email'],
+    })
+    .then(result => {
+      logger.info({ result }, 'users');
+      return null;
+    })
+    .catch((error: Error) => {
+      logger.error({ error }, 'error');
+    });
+
+  queryBuilder.mongodb
     .getUser({
       input: { email: 'teste1@teste.com' },
       columns: {
@@ -42,16 +46,17 @@ async function handler(
     .catch((error: Error) => {
       logger.error({ error }, 'error with MONGODB');
     });
+}
 
-  /* knex
-    .getUser({ table: 'users', input: { id: 1 }, columns: ['id'] })
-    .then(result => {
-      logger.info({ result }, 'users');
-      return null;
-    })
-    .catch((error: Error) => {
-      logger.error({ error }, 'error');
-    }); */
+const PORT = process.env.SERVER_PORT ?? 3940;
+
+async function handler(
+  _: IncomingMessage,
+  response: ServerResponse
+): Promise<void> {
+  logger.info('request received');
+
+  await createContext('dev');
 
   response.writeHead(200, { 'Content-Type': 'text/plain' });
   response.end('Hello World');
