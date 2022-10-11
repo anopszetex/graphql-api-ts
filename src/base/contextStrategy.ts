@@ -13,14 +13,20 @@ import {
   UserContext as MongoArgs,
 } from './../strategies/mongoDBStrategy';
 
-interface IStrategy<T, U, V> {
+interface IStrategy<
+  T extends PostgreArgs | MongoArgs,
+  U extends (UserPostgre | undefined) | (UserMongo | null),
+  V extends UserPostgre[] | UserMongo[]
+> {
   getUser: (args: T) => Promise<U>;
   getUserList: (args: T) => Promise<V>;
 }
 
-function createContextStrategy<T, U, V>(
-  contextStrategy: IStrategy<T, U, V>
-): IStrategy<T, U, V> {
+function createContextStrategy<
+  T extends PostgreArgs | MongoArgs,
+  U extends (UserPostgre | undefined) | (UserMongo | null),
+  V extends UserPostgre[] | UserMongo[]
+>(contextStrategy: IStrategy<T, U, V>): IStrategy<T, U, V> {
   const strategy = contextStrategy;
 
   return {
@@ -33,7 +39,7 @@ function createContextStrategy<T, U, V>(
   };
 }
 
-interface ILoadDb {
+export interface ILoadDb {
   knex: Knex;
   mongoose: Mongoose;
   queryBuilder: {
