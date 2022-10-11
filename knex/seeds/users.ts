@@ -46,7 +46,7 @@ export async function seed(knex: Knex): Promise<void> {
 
   const userEntries: UserSeed[] = [];
 
-  for (let index = 0; index < 2e3; index++) {
+  for (let index = 0; index < 10000; index++) {
     userEntries.push(await newUser());
   }
 
