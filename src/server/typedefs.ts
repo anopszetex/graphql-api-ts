@@ -5,7 +5,7 @@ import { mergeTypeDefs } from '@graphql-tools/merge';
 import path from 'node:path';
 
 export async function buildTypeDefs(): Promise<DocumentNode> {
-  const typesArray = await loadFiles(path.join(__dirname, '../schema'), {
+  const typesArray = await loadFiles(path.join(__dirname, '../schemas'), {
     extensions: ['graphql'],
   });
 

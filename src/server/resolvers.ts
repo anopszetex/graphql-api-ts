@@ -6,7 +6,7 @@ import path from 'node:path';
 
 export async function buildResolvers(): Promise<IResolvers> {
   const resolversArray = await loadFiles(
-    path.join(__dirname, '../resolvers/**/index.js')
+    path.join(__dirname, '../resolvers/**/index.ts')
   );
 
   return mergeResolvers(resolversArray);
