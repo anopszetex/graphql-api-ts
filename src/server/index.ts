@@ -11,35 +11,31 @@ import { buildTypeDefs } from './typedefs';
 import { createContainer } from './../infra/connect';
 import { loadDb, ILoadDb } from './../base/contextStrategy';
 
-interface IContext {
-  context: (ctx: ExpressContext) => Promise<ILoadDb>;
-}
+type IContext = (ctx: ExpressContext) => Promise<ILoadDb>;
 
 function buildContext(parentLogger: Logger): IContext {
   const database = createContainer(parentLogger);
 
-  return {
-    async context(ctx: ExpressContext) {
-      const req = ctx.req.originalUrl;
+  return async function context(ctx: ExpressContext) {
+    const req = ctx.req.originalUrl;
 
-      const instance = hyperid();
-      const traceId = instance();
-      const datasource = 'dev';
+    const instance = hyperid();
+    const traceId = instance();
+    const datasource = 'dev';
 
-      const logger = parentLogger.child({ req, datasource, traceId });
+    const logger = parentLogger.child({ req, datasource, traceId });
 
-      //* connect to postgre
-      const knex = database.getKnex(datasource);
+    //* connect to postgre
+    const knex = database.getKnex(datasource);
 
-      //* connect to mongodb
-      const mongoose = await database.getMongoose(datasource);
+    //* connect to mongodb
+    const mongoose = await database.getMongoose(datasource);
 
-      logger.info('context created');
+    logger.info('context created');
 
-      logger.debug(ctx.req.headers);
+    logger.debug(ctx.req.headers);
 
-      return loadDb(knex, mongoose);
-    },
+    return loadDb(knex, mongoose);
   };
 }
 
