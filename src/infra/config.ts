@@ -48,5 +48,5 @@ export function getMongooseConfig(database: string): MongoConfig {
 }
 
 export const authKey = Object.freeze({
-  JWT_KEY: process.env.AUTH_KEY_SECRET,
+  JWT_KEY: process.env.AUTH_KEY_SECRET ?? 'x1hgh2e3rr4t5ydsds58o9p0',
 });
