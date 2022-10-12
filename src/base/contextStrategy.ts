@@ -18,6 +18,32 @@ interface IStrategy<
   U extends (UserPostgre | undefined) | (UserMongo | null),
   V extends UserPostgre[] | UserMongo[]
 > {
+  /**
+   *
+   * @description Get user filtered by input
+   * @param {PostgreArgs | MongoArgs} args
+   * @returns {Promise<(UserPostgre | undefined) | (UserMongo | null)>}
+   * @example
+   *
+   * {
+   *  const { queryBuilder } = context;
+   *
+   *  const table = 'users';
+   *  const input = { id: 1 };
+   *  const columns: ['id'];
+   *
+   *  await queryBuilder.postgre.getUser({ table, input, columns }); //=> { id: 1 }
+   * }
+   *
+   * {
+   *  const { queryBuilder } = context;
+   *
+   *  const input = { id: 1 };
+   *  const columns: ['id'];
+   *
+   *  await queryBuilder.mongodb.getUser({ input, columns }); //=> { id: 1 }
+   * }
+   */
   getUser: (args: T) => Promise<U>;
   getUserList: (args: T) => Promise<V>;
 }
