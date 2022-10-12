@@ -1,43 +1,9 @@
 import { ApolloServer } from 'apollo-server';
 import { Logger } from 'pino';
-import hyperid from 'hyperid';
-
-// eslint-disable-next-line node/no-unpublished-import
-import { ExpressContext } from 'apollo-server-express';
 
 import { buildResolvers } from './resolvers';
 import { buildTypeDefs } from './typedefs';
-
-import { createContainer } from './../infra/connect';
-import { loadDb, ILoadDb } from './../base/contextStrategy';
-
-type IContext = (ctx: ExpressContext) => Promise<ILoadDb>;
-
-function buildContext(parentLogger: Logger): IContext {
-  const database = createContainer(parentLogger);
-
-  return async function context(ctx: ExpressContext) {
-    const req = ctx.req.originalUrl;
-
-    const instance = hyperid();
-    const traceId = instance();
-    const datasource = 'dev';
-
-    const logger = parentLogger.child({ req, datasource, traceId });
-
-    //* connect to postgre
-    const knex = database.getKnex(datasource);
-
-    //* connect to mongodb
-    const mongoose = await database.getMongoose(datasource);
-
-    logger.info('context created');
-
-    logger.debug(ctx.req.headers);
-
-    return loadDb(knex, mongoose);
-  };
-}
+import { buildContext } from './context';
 
 interface IBuildServer {
   listen: (port: string | number) => Promise<{ url: string }>;
