@@ -62,6 +62,7 @@
     "argon2": "^0.29.1",
     "dotenv": "^16.0.3",
     "graphql": "^16.6.0",
+    "graphql-query-compress": "^1.2.4",
     "hyperid": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.3.0",
