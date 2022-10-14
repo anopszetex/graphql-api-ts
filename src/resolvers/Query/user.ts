@@ -13,6 +13,7 @@ export async function user(
   });
 
   if (isEmpty(user)) {
+    context.logger.info('User not found');
     return null;
   }
 

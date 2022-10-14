@@ -1,12 +1,24 @@
 // eslint-disable-next-line node/no-unpublished-import
 import { ExpressContext } from 'apollo-server-express';
 
-import hyperid from 'hyperid';
+import { get } from 'lodash';
 import { Logger } from 'pino';
-import { ILoadDb, loadDb } from '../../base/contextStrategy';
-import { createContainer } from '../../infra/connect';
+import compress from 'graphql-query-compress';
+import hyperid from 'hyperid';
 
-type IContext = (ctx: ExpressContext) => Promise<ILoadDb>;
+import { loadDb } from '../../base/contextStrategy';
+import { createContainer } from '../../infra/connect';
+import { ContextParams } from '../../domains/types';
+
+type IContext = (ctx: ExpressContext) => Promise<ContextParams>;
+
+function debugRequest(logger: Logger, req: ExpressContext['req']): void {
+  const raw = get(req, ['body', 'query'], 'empty-query') as string;
+
+  const query = compress(raw);
+
+  logger.debug(`New request: ${req.headers.host ?? ''} ${query}`);
+}
 
 export function buildContext(parentLogger: Logger): IContext {
   const database = createContainer(parentLogger);
@@ -19,8 +31,10 @@ export function buildContext(parentLogger: Logger): IContext {
     const logger = parentLogger.child({
       datasource,
       traceId,
-      req: ctx.req.headers.origin,
+      origin: ctx.req.headers.origin,
     });
+
+    debugRequest(logger, ctx.req);
 
     //* connect to postgre
     const knex = database.getKnex(datasource);
@@ -30,6 +44,6 @@ export function buildContext(parentLogger: Logger): IContext {
 
     logger.debug('Context created');
 
-    return loadDb(knex, mongoose);
+    return { ...loadDb(knex, mongoose), logger };
   };
 }

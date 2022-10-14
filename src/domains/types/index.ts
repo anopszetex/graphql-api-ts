@@ -1,3 +1,4 @@
+import { Logger } from 'pino';
 import { ILoadDb } from '../../base/contextStrategy';
 
 export interface UserSchemaGraphql {
@@ -7,4 +8,6 @@ export interface UserSchemaGraphql {
   isActive: boolean;
 }
 
-export type ContextParams = ILoadDb;
+export interface ContextParams extends ILoadDb {
+  logger: Logger;
+}
